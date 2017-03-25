@@ -1,0 +1,9 @@
+kafka_user: kafka
+kafka_group: kafka
+kafka_pass: kafka_123
+
+kafka_data: "/usr/kafka/kdata"
+kafka_logging: "/usr/kafka/klog"
+
+
+KAFKA_HOST: "{{ hostvars[groups['zkafka'][0]].inventory_hostname }}"

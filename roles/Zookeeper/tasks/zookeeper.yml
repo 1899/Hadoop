@@ -1,0 +1,59 @@
+---
+
+- name: Create group Zkadmin
+  group: name={{ zk_group }} state=present
+
+- name: Create user Zkadmin
+  user: name={{ zk_user }} group={{ zk_group }} password={{ zk_pass }}
+
+- name: Download zookeeper tarball to remote server
+  get_url:
+    url: https://s3.amazonaws.com/compucom.uat/Software/zookeeper/zookeeper-3.4.9.tar.gz
+    dest: /usr/local
+    owner: "{{ zk_user }}"
+    group: "{{ zk_group }}"
+    mode: 0755
+
+- name: Extract zookeeper
+  shell: tar -zxvf zookeeper-3.4.9.tar.gz
+  args:
+    chdir: /usr/local/
+
+- name: Rename Zookeeper
+  shell: mv zookeeper-3.4.9 zookeeper
+  args:
+    chdir: "/usr/local/"
+- name: Remove Zookeeper tarball
+  command: rm -rf zookeeper-3.4.9.tar.gz
+  args:
+    chdir: "/usr/local/"
+
+
+- name: Create symbolic link for /opt/zookeeper
+  file: src=/usr/local/zookeeper path=/opt/zookeeper state=link owner={{ zk_user }} group={{ zk_group }}
+
+- name: Copy Zoo.cfg to zookeeper server
+  template: src=zoo.cfg dest=/usr/local/zookeeper/conf/zoo.cfg owner={{ zk_user }} group={{ zk_group }}
+
+- name: Copy configuration to zookeeper
+  template: src={{ item }} dest=/usr/local/zookeeper/conf/{{ item }} owner={{ zk_user }} group={{ zk_group }} 
+  with_items:
+    - log4j.properties
+
+- name: Create directory for Zookeeper
+  file: path={{ item }} owner={{ zk_user }} group={{ zk_group }} state=directory
+  with_items:
+    - "{{ zk_data }}"
+    - "{{ zk_logging }}"
+
+- name: Checking persmission for zookeeper directory
+  file: path=/usr/local/zookeeper/ owner={{ zk_user }} group={{ zk_group }} mode=0755 recurse=yes
+
+- name: Starting Zookeeper Server
+  become: true
+  become_user: "{{ zk_user }}"
+  command: "{{ item }}"
+  args:
+    chdir: "/usr/local/zookeeper/bin"
+  with_items:
+    - ./zkServer.sh start

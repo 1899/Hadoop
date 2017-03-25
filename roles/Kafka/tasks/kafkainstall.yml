@@ -1,0 +1,56 @@
+---
+
+- name: Create group Kafka
+  group: name={{ kafka_group }} state=present
+
+- name: Create user Kafka
+  user: name={{ kafka_user }} group={{ kafka_group }} password={{ kafka_pass }}
+
+- name: Download Kafka tarball to remote server
+  get_url:
+    url: https://s3.amazonaws.com/compucom.uat/Software/kafka/kafka_2.11-0.10.1.0.tgz
+    dest: /usr/local
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_group }}"
+    mode: 0755
+
+- name: Extract kafka
+  shell: tar -zxvf kafka_2.11-0.10.1.0.tgz
+  args:
+    chdir: /usr/local/
+
+- name: Rename to kafka
+  shell: mv kafka_2.11-0.10.1.0 kafka
+  args:
+    chdir: "/usr/local/"
+
+- name: Remove Kafka tar ball
+  command: rm -rf kafka_2.11-0.10.1.0.tgz
+  args:
+    chdir: "/usr/local/"
+
+- name: Change user & group Persmission for kafka folder
+  file: path=/usr/local/kafka/ owner={{ kafka_user }} group={{ kafka_group }} mode=0755 recurse=yes
+
+- name: Create symbolic link for /opt/kafka
+  file: src=/usr/local/kafka/* path=/opt/kafka state=link owner={{ kafka_user }} group={{ kafka_group }} force=yes
+
+- name: Create directory for Kafka 
+  file: path={{ item }} owner={{ kafka_user }} group={{ kafka_group }} state=directory
+  with_items:
+    - "{{ kafka_data }}"
+    - "{{ kafka_logging }}"
+
+- name: copy configuration file for Kafka
+  template: src={{ item }} dest=/usr/local/kafka/config/{{ item }} owner={{ kafka_user }} group={{ kafka_group }} mode=0755
+  with_items:
+    - "server.properties"
+
+- name: Starting Kafka Server
+  become: true
+  become_user: "{{ kafka_user }}"
+  command: "{{ item }}"
+  args:
+    chdir: "/usr/local/kafka/"
+  with_items:
+    - nohup  bin/kafka-server-start.sh -daemon config/server.properties

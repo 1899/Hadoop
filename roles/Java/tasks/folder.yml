@@ -1,0 +1,12 @@
+---
+
+    - name: create directory
+      file: path=/opt/javanew state=directory 
+
+    - name: Download JDK from S3
+      get_url:
+        url:  http://euo.s3-website-us-east-1.amazonaws.com/Software/JAVA/jdk-8u91-linux-x64.tar.gz
+        dest: /opt/javanew
+        mode: 0754
+    - name: Extract java
+      shell: tar xvf jdk-8u91-linux-x64.tar.gz chdir=/opt/javanew/

@@ -1,0 +1,37 @@
+---
+
+# --------------------------------------
+# USERs
+# --------------------------------------
+
+zk_user: zkadmin
+zk_group: zkadmin
+zk_pass: zkadmin_123
+
+
+# --------------------------------------
+# COMMON FOR INSTALL PATH
+# --------------------------------------
+
+# Common Location information.
+common:
+  install_base_path: /usr/local
+  soft_link_base_path: /opt
+
+# --------------------------------------
+# Zookeeper Variables.
+# --------------------------------------
+
+# Zookeeper Version.
+zookeeper_version: zookeeper-3.4.9
+
+# Zookeeper Storage and Logging.
+zk_data: '/usr/zoo/zkdata'
+zk_logging: '/usr/zoo/zklog/'
+
+
+# --------------------------------------
+# JAVA Variables.
+# --------------------------------------
+java_home: /opt/javanew
+
