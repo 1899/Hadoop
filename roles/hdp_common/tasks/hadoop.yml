@@ -1,0 +1,105 @@
+---
+
+- name: create Hadoop group
+  group: 
+    name: "{{ hd_group }}"
+    state: present
+
+- name: Create Hadoop User
+  user:
+    name: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+
+- name: Create Apache directory for Hadoop eco-system components
+  file:
+    path: /usr/local/apache
+    state: directory
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0755
+
+- name: Download Hadoop Archive
+  unarchive:
+    src: "http://mirror.fibergrid.in/apache/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz"
+    dest: "{{ base_path }}"
+    remote_src: True
+
+- name: Rename hadoop directory
+  command: mv "{{ base_path }}"/hadoop-2.7.3 "{{ base_path }}"/hadoop
+
+- name: Change directory persmissions
+  file:
+    path: "{{ base_path }}"
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    recurse: yes
+    mode: 755
+
+- name: Create Symlink for Hadoop
+  file:
+    src: /usr/local/apache/hadoop
+    path: /opt/hadoop
+    state: link
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0755
+
+- name: Copy configuration file
+  template:
+    src: core-site.xml
+    dest: "{{ base_path}}/hadoop/etc/hadoop/"
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0755
+
+- name: Copy configuration file
+  template:
+    src: mapred-site.xml
+    dest: "{{ base_path}}/hadoop/etc/hadoop/"
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0755
+- name: Copy configuration file
+  template:
+    src: yarn-site.xml
+    dest: "{{ base_path}}/hadoop/etc/hadoop/"
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0755
+- name: Copy configuration file
+  template:
+    src: hdfs-site.xml
+    dest: "{{ base_path}}/hadoop/etc/hadoop/"
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0755
+
+- name: Change directory persmissions
+  file:
+    path: "{{ base_path }}/hadoop"
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    recurse: yes
+    mode: 755
+
+
+- name: Format Namenode
+  become: True
+  become_user: "{{ hd_user }}"
+  command: "{{ item }}"
+  args:
+    chdir: "{{ base_path }}/hadoop/bin"
+  with_items:
+    - "./hadoop namenode -format"
+
+
+
+- name: Start Hadoop DFS server
+  become: true
+  become_user: "{{ hd_user }}"
+  command: "{{ item }}"
+  args:
+    chdir: "{{ base_path }}/hadoop/sbin"
+  with_items:
+    - ./start-dfs.sh
+

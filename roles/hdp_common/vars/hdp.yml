@@ -1,0 +1,9 @@
+---
+
+remote_path: "/root"
+base_path: "/usr/local/apache/"
+soft_link: "/opt"
+
+hd_user: "hadoop"
+hd_group: "hadoop"
+hd_pass: "$6$rounds=656000$ErfyVfmfwG37g.PM$hnI9e6yo3UqrTo17u8V6WQVUP6TzavcoJGNTuWdjWhEznbo4b0/a6AQp80QevVlygUcjMIVP0ucjS90jLwns00"

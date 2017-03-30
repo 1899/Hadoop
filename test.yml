@@ -1,0 +1,40 @@
+---
+
+- name: test
+  hosts: hadoop
+  become: True
+  remote_user: ymallip
+  vars:
+    remote_path: "/root"
+    base_path: "/usr/local/apache/"
+    soft_link: "/opt"
+    hd_user: hadoop
+    hd_group: hadoop          
+  tasks:
+    - name: cahnge permissions
+      file: 
+        path: "{{ base_path }}/hadoop"
+        recurse: yes
+        owner: "{{ hd_user }}"
+        group: "{{ hd_group }}"
+        mode: 0777
+
+    - name: Format Namenode
+      become: True
+      become_user: "{{ hd_user }}"
+      command: "{{ item }}"
+      args:
+        chdir: "{{ base_path }}/hadoop/bin"
+      with_items:
+        - "./hadoop namenode -format"
+      ignore_errors: yes
+
+    - name: Start Hadoop DFS server
+      become: true
+      become_user: "{{ hd_user }}"
+      command: "{{ item }}"
+      args:
+        chdir: "{{ base_path }}/hadoop/sbin"
+      with_items:
+        - ./start-dfs.sh
+

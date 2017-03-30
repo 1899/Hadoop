@@ -1,21 +1,6 @@
-[namenode]
-devops
-
-[datanode]
-
-[secondarynode]
-
-
-[resoursemanager]
-
-
-[kafka]
-
-[zookeeper]
-
-[strom]
+[hadoop]
+54.190.27.46
 
 [all:vars]
-ansible_ssh_user=root
-ansible_ssh_private_key_file=~/.ssh/id_rsa.pem
-#ansible_ssh_pass=redhat123
+ansible_ssh_user=centos
+ansible_ssh_private_key_file=~/.ssh/yesudas.pem

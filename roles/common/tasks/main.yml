@@ -1,0 +1,15 @@
+---
+
+- include_vars: ../../../group_vars/env.yml
+
+- name: Create .ssh directory
+  file:
+    path: ~/.ssh
+    state: directory
+    owner: "{{ hd_user }}"
+    group: "{{ hd_group }}"
+    mode: 0700
+
+- name: Generate sshkey for Namenode
+  command: ssh-keygen -t rsa -q -f /home/{{ hd_user }}/id_rsa
+

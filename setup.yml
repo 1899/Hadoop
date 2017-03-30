@@ -1,57 +1,17 @@
 ---
 
 - name: Install Java
-  hosts: all
+  hosts: hadoop
+  become: True
   remote_user: centos
   gather_facts: no
   roles:
-    - Java
+#    - Java
 
 - name: Initial Common Setup
-  hosts: namenode
-  remote_user: root
+  hosts: hadoop
+  become: True
+  remote_user: centos
   gather_facts: yes
   roles:
-    - hdp_common 
-
-- name: Install Hadoop Namenode
-  hosts: namenode
-  remote_user: root
-  gather_facts: yes
-  roles:
-          #    - NN
-
-- name: Install Hadoop Secondary Namenode
-  hosts: secondarynn
-  remote_user: root
-  gather_facts: yes
-  roles:
-          #   - SNN
-
-- name: Install Hadoop Resource Manager
-  hosts: resourcemanager
-  remote_user: root
-  gather_facts: yes
-  roles:
-          #    - RM
-
-- name: Install Hadoop Datanode
-  hosts: namenode
-  remote_user:
-  gather_facts:
-  roles:
-          #    - DN
-      
-- name: Install zookeeper 
-  hosts: zookeeper
-  remote_user: zkadmin
-  gather_facts: yes
-  roles:
-          #    - Zookeeper
-
-- name: Install Kafka
-  hosts: kafka
-  remote_user: kafka
-  gather_facts: yes
-  roles:
-          #    - Kafka
+    - hdp_common

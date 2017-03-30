@@ -1,0 +1,8 @@
+---
+
+- name: common
+  hosts: common
+  become: True
+  remote_user: mallip
+  roles:
+    - common
